@@ -15,8 +15,8 @@ X
 
 X
 
-* Free software: ISC license
-* Documentation: https://x.readthedocs.org.
+* Free software: BSD license
+* Documentation: https://rlx.readthedocs.org.
 
 Features
 --------

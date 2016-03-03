@@ -5,10 +5,7 @@ Installation
 ============
 
 At the command line::
-
-    $ easy_install x
-
-Or, if you have virtualenvwrapper installed::
-
-    $ mkvirtualenv x
-    $ pip install x
+    
+    $ git clone https://github.com/EderSantana/X.git
+    $ cd X
+    $ python setup.py install

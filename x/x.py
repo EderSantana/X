@@ -6,22 +6,21 @@ from __future__ import division
 class Enviroment(object):
     """Base Enviroment class
 
+    Attributes
+    ----------
+    observe : callable
+        Get observation of the Enviroment's state
+    update : callable
+        Update Enviroment's state from a given action
+
     """
     def __init__(self):
         raise NotImplementedError
 
     def observe(self):
-        """
-        Observe the :class:`Enviroment` state or its representation
-
-        """
         raise NotImplementedError
 
     def update(self, action):
-        """
-        Update :class:`Enviroment` given an external action
-
-        """
         raise NotImplementedError
 
 
