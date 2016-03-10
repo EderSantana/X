@@ -2,7 +2,6 @@
 from __future__ import absolute_import
 from __future__ import division
 
-from collections import OrderedDict
 import numpy as np
 
 
@@ -111,10 +110,8 @@ class ExperienceReplay(Memory):
         rlst = np.random.randint(0, len(self.memory), size=batch_mem)
         for i, idx in enumerate(rlst):
             prev_state = self.memory[idx]['prev_state']
-            action = self.memory[idx]['action']
             reward = self.memory[idx]['reward']
             next_state = self.memory[idx]['next_state']
-            game_over = self.memory[idx]['game_over']
             inputs[i] = prev_state.reshape((1, ) + model.input_shape)
             next_state = next_state.reshape((1, ) + model.input_shape)
             if callback:
@@ -124,21 +121,24 @@ class ExperienceReplay(Memory):
                     next_state, train=True)
 
         # sample from experience
-        if not self.experience and exp_batch_size>0:
+        if not self.experience and exp_batch_size > 0:
             return inputs, targets
         else:
             rlst = np.random.randint(0, len(self.memory), size=batch_exp)
             for k, idx in enumerate(rlst):
                 prev_state = self.memory[idx]['prev_state']
-                action = self.memory[idx]['action']
                 reward = self.memory[idx]['reward']
                 next_state = self.memory[idx]['next_state']
-                game_over = self.memory[idx]['game_over']
                 inputs[i+k] = prev_state.reshape((1, ) + model.input_shape)
                 next_state = next_state.reshape((1, ) + model.input_shape)
                 if callback:
                     targets[i+k] = callback(model, next_state)
                 else:
                     targets[i+k] = reward + gamma * model.max_values(
-                        next_state, train=True)
+                        next_state, train=False)
             return inputs, targets
+
+    @property
+    def description(self):
+        dstr = "Experience Replay \n\t Memory length: {}"
+        return dstr.format(self.memory_length)

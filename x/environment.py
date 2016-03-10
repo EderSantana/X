@@ -106,6 +106,10 @@ class Catcher(Enviroment):
         else:
             return 0
 
+    def observe_image(self):
+        canvas = self._draw_state()
+        return canvas.reshape(1, 1, self.grid_size, self.grid_size)
+
     def observe(self):
         canvas = self._draw_state()
         return canvas.reshape((1, ) + self.output_shape)
@@ -131,3 +135,7 @@ class Catcher(Enviroment):
             return True
         else:
             return False
+
+    @property
+    def description(self):
+        return "Catch game with grid size {}".format(self.grid_size)
