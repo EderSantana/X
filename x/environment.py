@@ -60,9 +60,10 @@ class Catcher(Enviroment):
     grid_size : int
         Size of the square grid
     """
-    def __init__(self, grid_size=10, output_shape=(1, 10, 10)):
+    def __init__(self, grid_size=10, output_shape=None):
         self.grid_size = grid_size
-        self.output_shape = output_shape
+        if output_shape is None:
+            self.output_shape = (grid_size**2, )
         self.reset()
 
     def _update_state(self, action):

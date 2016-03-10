@@ -151,7 +151,8 @@ class DiscretAgent(Agent):
         print("Free play started!")
         frames = np.zeros((0, ) + env.observe_image().shape[1:])
         frames = frames.transpose(0, 2, 3, 1)
-        win_cc = 0
+        rewards = 0
+        progbar = Progbar(epoch)
 
         for e in xrange(epoch):
             env.reset()
@@ -167,20 +168,17 @@ class DiscretAgent(Agent):
 
                 # apply action, get rewareds and new state
                 obs_t, reward, game_over = env.update(action)
+                rewards += reward
 
                 frame_t = env.observe_image().transpose(0, 2, 3, 1)
                 frames = np.concatenate([frames, frame_t], axis=0)
 
             if verbose == 1:
-                if reward == 1:
-                    win = "win"
-                    win_cc += 1
-                else:
-                    win = "lose"
-                print(e, loss, win)
+                progbar.add(1, values=[("loss", loss), ("rewards", rewards)])
 
         if visualize:
+            print("Making gif!")
             frames = np.repeat(frames, 3, axis=-1)
             make_gif(frames[:-visualize['n_frames']],
                      filepath=visualize['filepath'], gray=visualize['gray'])
-        print("Win count: {}".format(win_cc))
+            print("See your gif at {}".format(visualize['filepath']))
