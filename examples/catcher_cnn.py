@@ -20,7 +20,7 @@ from keras.optimizers import SGD
 from x.environment import Catcher
 from x.models import KerasModel
 from x.memory import ExperienceReplay
-from x.agent import DiscretAgent
+from x.agent import DiscreteAgent
 
 num_actions = 3
 nb_filters, nb_rows, nb_cols = 32, 3, 3
@@ -40,7 +40,7 @@ model = KerasModel(keras_model)
 M = ExperienceReplay(memory_length=args.memory)
 
 # Agent
-A = DiscretAgent(model, M)
+A = DiscreteAgent(model, M)
 # SGD optimizer + MSE cost + MAX policy = Q-learning as we know it
 A.compile(optimizer=SGD(lr=0.2), loss="mse", policy_rule="max")
 
