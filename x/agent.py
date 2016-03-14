@@ -22,7 +22,7 @@ class Agent(object):
         self.memory = memory
 
 
-class DiscretAgent(Agent):
+class DiscreteAgent(Agent):
     """Single Discret action Agent
 
     Parameters
