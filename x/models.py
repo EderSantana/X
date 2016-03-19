@@ -183,22 +183,25 @@ class KerasModel(Model):
 class TableModel(Model):
     def __init__(self, state_dim, num_actions):
         """Table model
+        Stores and updates a Q-value for every possible state/action pair
         Attributes
         ----------
-        model :
+        state_dim : dimension of state space
+        num_actions: size of action space
 
         """
         self.state_dim = state_dim
         self.n_actions = num_actions
 
     def compile(self, state_dim_values, lr=0.2, policy_rule="max", init_value=None):
-        """Initialize model table
-
+        """Build and initialize table with all possible state values.
+           state_dim_values consists of a tuple of arrays or lists - each array
+           gives every possible value for the corresponding dimension.
         """
 
         self.policy_rule = policies.get(policy_rule)
 
-        if init_value == None:
+        if init_value is None:
             self.init_value = np.zeros(self.num_actions)
         else:
             self.init_value = init_value
