@@ -189,5 +189,5 @@ class DiscreteAgent(Agent):
             print("Making gif!")
             frames = np.repeat(frames, 3, axis=-1)
             make_gif(frames[:visualize['n_frames']],
-                     filepath=visualize['filepath'], gray=visualize['gray'])
+                     filepath=visualize['filepath'], gray=visualize['gray'], interpolation='none')
             print("See your gif at {}".format(visualize['filepath']))
