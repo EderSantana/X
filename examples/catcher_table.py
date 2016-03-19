@@ -24,7 +24,7 @@ import numpy as np
 num_actions = 3
 nb_rows, nb_cols = args.grid, args.grid
 state_dim = 3
-state_dim_values=(np.r_[0:nb_rows],np.r_[0:nb_cols],np.r_[1:nb_cols-1])
+state_dim_values=(np.r_[0:nb_rows],np.r_[0:nb_cols],np.r_[1:nb_cols])
 
 # To run an experiment, the Agent needs an Enviroment to iteract with
 env = Catcher(grid_size=args.grid, output_type='position')
@@ -39,7 +39,7 @@ M = ExperienceReplay(memory_length=args.memory)
 agent = DiscreteAgent(model, M)
 
 # Configure and build table model
-agent.compile(state_dim_values, lr=0.2, policy_rule="max")
+agent.compile(state_dim_values, lr=0.2, policy_rule="maxrand")
 
 agent.learn(env, epoch=args.epoch, batch_size=args.batch)
 

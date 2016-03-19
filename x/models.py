@@ -193,7 +193,7 @@ class TableModel(Model):
         self.state_dim = state_dim
         self.n_actions = num_actions
 
-    def compile(self, state_dim_values, lr=0.2, policy_rule="max", init_value=None):
+    def compile(self, state_dim_values, lr=0.2, policy_rule="maxrand", init_value=None):
         """Build and initialize table with all possible state values.
            state_dim_values consists of a tuple of arrays or lists - each array
            gives every possible value for the corresponding dimension.

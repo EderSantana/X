@@ -33,8 +33,22 @@ class Max(Policy):
         return np.max(values, axis=-1)[np.newaxis].T
 
 
+class Maxrand(Policy):
+    def __call__(self, values):
+        return K.max(values, axis=-1, keepdims=True)
+
+    @classmethod
+    def policy(self, values):
+        max_inds = np.argwhere(values == np.amax(values))
+        return np.random.choice(max_inds.reshape(-1,))[np.newaxis]
+
+    @classmethod
+    def max(self, values):
+        return np.max(values, axis=-1)[np.newaxis].T
+
 # aliases
 max = Max
+maxrand = Maxrand
 
 
 def get(identifier):
