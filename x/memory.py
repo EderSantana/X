@@ -104,6 +104,7 @@ class ExperienceReplay(Memory):
             batch_exp = 0
         bsize = batch_mem + batch_exp
         inputs = np.zeros((bsize, ) + model.input_shape)
+        actions = np.zeros((bsize, 1))
         targets = np.zeros((bsize, 1))
 
         # sample from memory
@@ -113,16 +114,20 @@ class ExperienceReplay(Memory):
             reward = self.memory[idx]['reward']
             next_state = self.memory[idx]['next_state']
             inputs[i] = prev_state.reshape((1, ) + model.input_shape)
+            actions[i] = self.memory[idx]['action']
             next_state = next_state.reshape((1, ) + model.input_shape)
             if callback:
                 targets[i] = callback(model, next_state)
             else:
-                targets[i] = reward + gamma * model.max_values(
-                    next_state, train=True)
+                #print('next state:')
+                #print next_state
+                #print('targets[i]:')                
+                #print(targets[i])
+                targets[i] = reward + gamma * model.max_values(next_state, train=True)
 
         # sample from experience
         if not self.experience and exp_batch_size > 0:
-            return inputs, targets
+            return inputs, targets, actions
         else:
             rlst = np.random.randint(0, len(self.memory), size=batch_exp)
             for k, idx in enumerate(rlst):
@@ -130,13 +135,14 @@ class ExperienceReplay(Memory):
                 reward = self.memory[idx]['reward']
                 next_state = self.memory[idx]['next_state']
                 inputs[i+k] = prev_state.reshape((1, ) + model.input_shape)
+                actions[i+k] = self.memory[idx]['action']
                 next_state = next_state.reshape((1, ) + model.input_shape)
                 if callback:
                     targets[i+k] = callback(model, next_state)
                 else:
                     targets[i+k] = reward + gamma * model.max_values(
                         next_state, train=False)
-            return inputs, targets
+            return inputs, targets, actions
 
     @property
     def description(self):

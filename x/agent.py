@@ -23,7 +23,7 @@ class Agent(object):
 
 
 class DiscreteAgent(Agent):
-    """Single Discret action Agent
+    """Single Discrete action Agent
 
     Parameters
     ----------
@@ -38,14 +38,22 @@ class DiscreteAgent(Agent):
 
     """
     def __init__(self, model, memory, epsilon=None):
-        super(DiscretAgent, self).__init__(model, memory)
+        super(DiscreteAgent, self).__init__(model, memory)
         if epsilon is None:
             self.epsilon = lambda *args: .1
 
-    def compile(self, optimizer="sgd", loss="mse", policy_rule="max",
-                experience=None):
-        self.model.compile(optimizer, loss, policy_rule)
+    def compile(self, *args, **kwargs):
+        self.model.compile(*args, **kwargs)
+        if 'experience' in kwargs:
+            experience = kwargs['experience']
+        else:
+            experience = None
         self.memory.reset(experience)
+        
+#    def compile(self, optimizer="sgd", loss="mse", policy_rule="max",
+#                experience=None):
+#        self.model.compile(optimizer, loss, policy_rule)
+#        self.memory.reset(experience)
 
     def values(self, observation, train=False):
         return self.model.values(observation, train)
@@ -60,10 +68,10 @@ class DiscreteAgent(Agent):
             return self.model.policy(observation, train)
 
     def update(self, batch_size=1, exp_batch_size=0, gamma=0.9, callback=None):
-        inputs, targets = self.get_batch(
+        inputs, targets, actions= self.get_batch(
             self.model, batch_size=batch_size, exp_batch_size=exp_batch_size,
             gamma=gamma, callback=callback)
-        loss = self.model.update(inputs, targets)
+        loss = self.model.update(inputs, targets, actions)
         return loss
 
     @property
@@ -128,8 +136,10 @@ class DiscreteAgent(Agent):
 
             # get initial observation, start game
             obs_t = env.observe()
+            
             # Run an episonde
             while not game_over:
+                #print(obs_t)
                 obs_tm1 = obs_t
                 action = self.policy(obs_tm1)
 
@@ -175,10 +185,13 @@ class DiscreteAgent(Agent):
 
             if verbose == 1:
                 progbar.add(1, values=[("loss", loss), ("rewards", rewards)])
-
+        
+        
+        
         if visualize:
             print("Making gif!")
             frames = np.repeat(frames, 3, axis=-1)
-            make_gif(frames[:-visualize['n_frames']],
+            make_gif(frames[:visualize['n_frames']],
                      filepath=visualize['filepath'], gray=visualize['gray'])
             print("See your gif at {}".format(visualize['filepath']))
+        

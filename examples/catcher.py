@@ -1,3 +1,4 @@
+#%%
 import argparse
 
 # Parameters
@@ -48,3 +49,4 @@ A.learn(catcher, epoch=args.epoch, batch_size=args.batch)
 
 # Test the agent following the learned policy
 A.play(catcher, epoch=100, visualize={'filepath': args.output, 'n_frames': 270, 'gray': True})
+#%%
