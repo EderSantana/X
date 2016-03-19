@@ -12,6 +12,7 @@ from . import policies
 
 import itertools
 
+
 class Model(object):
     """Base Model class
 
@@ -178,60 +179,60 @@ class KerasModel(Model):
         dstr = "Keras Model \n\t Optimizer: {} \n\t Loss: {} \n\t Policy: {}"
         return dstr.format(self.optimizer, self.loss, self.policy_rule)
 
-class TableModel(Model):
-    def __init__(self,state_dim,num_actions):
-        """Table model 
 
+class TableModel(Model):
+    def __init__(self, state_dim, num_actions):
+        """Table model
         Attributes
         ----------
-        model : :obj:`Keras.model.Sequential`
-            A Keras Sequential neural network model.
+        model :
+
         """
         self.state_dim = state_dim
         self.n_actions = num_actions
-        
-    def compile(self, state_dim_values, lr=0.2, policy_rule="max", init_value=None ):
+
+    def compile(self, state_dim_values, lr=0.2, policy_rule="max", init_value=None):
         """Initialize model table
-                
+
         """
-        
+
         self.policy_rule = policies.get(policy_rule)
-        
+
         if init_value == None:
             self.init_value = np.zeros(self.num_actions)
         else:
             self.init_value = init_value
-            
+
         self.table = {key: np.array(self.init_value) for key in list(itertools.product(*state_dim_values))}
         self.lr = lr
-        
+
     def values(self, observation):
         if observation.ndim == 1:
             vals = self.table[tuple(observation)]
         else:
-            obs_tuple=tuple(map(tuple,observation)) # convert to tuple of tuples
-            vals=map(self.table.__getitem__, obs_tuple) # get values from dict as list of arrays
-        vals = np.asarray(vals) # convert list of arrays to matrix (2-d array)
+            obs_tuple = tuple(map(tuple, observation))  # convert to tuple of tuples
+            vals = map(self.table.__getitem__, obs_tuple)  # get values from dict as list of arrays
+        vals = np.asarray(vals)  # convert list of arrays to matrix (2-d array)
         return vals
-        
+
     def max_values(self, observation, *args, **kwargs):
         vals = self.values(observation)
         return self.policy_rule.max(vals)
-        
+
     def policy(self, observation, *args, **kwargs):
         vals = self.values(observation)
         return self.policy_rule.policy(vals)
 
     def update(self, inputs, targets, actions, weights=None):
-                
+
         current_values = self.values(inputs)
-          
-        for ii,input in enumerate(inputs):
+
+        for ii, input in enumerate(inputs):
             aa = int(actions[ii])
             self.table[tuple(input)][aa] = current_values[ii][aa] + self.lr * (targets[ii] - current_values[ii][aa])
-            
+
         return ((targets - current_values)**2).sum()
-        
+
     @property
     def num_actions(self):
         return self.n_actions
@@ -239,7 +240,7 @@ class TableModel(Model):
     @property
     def input_shape(self):
         return (self.state_dim,)
-        
+
     @property
     def description(self):
         dstr = "Table Model"

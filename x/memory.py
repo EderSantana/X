@@ -119,10 +119,6 @@ class ExperienceReplay(Memory):
             if callback:
                 targets[i] = callback(model, next_state)
             else:
-                #print('next state:')
-                #print next_state
-                #print('targets[i]:')                
-                #print(targets[i])
                 targets[i] = reward + gamma * model.max_values(next_state, train=True)
 
         # sample from experience

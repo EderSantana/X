@@ -30,7 +30,7 @@ state_dim_values=(np.r_[0:nb_rows],np.r_[0:nb_cols],np.r_[1:nb_cols-1])
 env = Catcher(grid_size=args.grid, output_type='position')
 
 # Create Table Model
-model = TableModel(state_dim = 3, num_actions = num_actions)
+model = TableModel(state_dim=3, num_actions=num_actions)
 
 # Memory
 M = ExperienceReplay(memory_length=args.memory)
@@ -39,7 +39,7 @@ M = ExperienceReplay(memory_length=args.memory)
 agent = DiscreteAgent(model, M)
 
 # Configure and build table model
-agent.compile(state_dim_values, lr=0.2, policy_rule="max" )
+agent.compile(state_dim_values, lr=0.2, policy_rule="max")
 
 agent.learn(env, epoch=args.epoch, batch_size=args.batch)
 

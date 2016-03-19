@@ -63,7 +63,7 @@ class Catcher(Enviroment):
     def __init__(self, grid_size=10, output_shape=None, output_type='pixels'):
         self.grid_size = grid_size
         self.output_type = output_type
-        
+
         if output_shape is None:
             if output_type == 'pixels':
                 self.output_shape = (grid_size**2, )
