@@ -59,6 +59,11 @@ class Catcher(Enviroment):
     ----------
     grid_size : int
         Size of the square grid
+    output_type: str
+        Either give state description as raw 'pixels', or as the location of 
+        the fruit and basket 'position'. The 'pixels' state space size is
+        2**(grid_size**2), while the 'position' state space size is 
+        grid_size**3.
     """
     def __init__(self, grid_size=10, output_shape=None, output_type='pixels'):
         self.grid_size = grid_size

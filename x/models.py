@@ -27,6 +27,8 @@ class Model(object):
     policy : callable
         Return action given an input enviroment observation as np.argmax of
         `values`
+    update : callable
+        Update the model in response to state transitions.
     num_action : int
         Number of possible actions
     input_shape : :list:`int`
