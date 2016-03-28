@@ -59,11 +59,21 @@ class Catcher(Enviroment):
     ----------
     grid_size : int
         Size of the square grid
+    output_type: str
+        Either give state description as raw 'pixels', or as the location of 
+        the fruit and basket 'position'. The 'pixels' state space size is
+        2**(grid_size**2), while the 'position' state space size is 
+        grid_size**3.
     """
-    def __init__(self, grid_size=10, output_shape=None):
+    def __init__(self, grid_size=10, output_shape=None, output_type='pixels'):
         self.grid_size = grid_size
+        self.output_type = output_type
+
         if output_shape is None:
-            self.output_shape = (grid_size**2, )
+            if output_type == 'pixels':
+                self.output_shape = (grid_size**2, )
+            elif output_type == 'position':
+                self.output_shape = (3, )
         self.reset()
 
     def _update_state(self, action):
@@ -112,8 +122,12 @@ class Catcher(Enviroment):
         return canvas.reshape(1, 1, self.grid_size, self.grid_size)
 
     def observe(self):
-        canvas = self._draw_state()
-        return canvas.reshape((1, ) + self.output_shape)
+        if self.output_type == 'pixels':
+            canvas = self._draw_state()
+            out = canvas.reshape((1, ) + self.output_shape)
+        if self.output_type == 'position':
+            out = self.state[0]
+        return out
 
     def update(self, action):
         self._update_state(action)

@@ -10,6 +10,8 @@ from keras.models import weighted_objective
 
 from . import policies
 
+import itertools
+
 
 class Model(object):
     """Base Model class
@@ -25,6 +27,8 @@ class Model(object):
     policy : callable
         Return action given an input enviroment observation as np.argmax of
         `values`
+    update : callable
+        Update the model in response to state transitions.
     num_action : int
         Number of possible actions
     input_shape : :list:`int`
@@ -45,7 +49,7 @@ class Model(object):
     def policy(self, observation, train=False):
         raise NotImplementedError
 
-    def update(self, inputs, targets):
+    def update(self, inputs, targets, actions):
         raise NotImplementedError
 
     @property
@@ -158,7 +162,7 @@ class KerasModel(Model):
         vals = self.values(observation, train)[0]
         return self.policy_rule.policy(vals)
 
-    def update(self, inputs, targets, weights=None):
+    def update(self, inputs, targets, actions, weights=None):
         if weights is None:
             weights = np.ones(len(targets))
         loss = self._train([inputs, targets, weights])[0]
@@ -176,3 +180,73 @@ class KerasModel(Model):
     def description(self):
         dstr = "Keras Model \n\t Optimizer: {} \n\t Loss: {} \n\t Policy: {}"
         return dstr.format(self.optimizer, self.loss, self.policy_rule)
+
+
+class TableModel(Model):
+    def __init__(self, state_dim, num_actions):
+        """Table model
+        Stores and updates a Q-value for every possible state/action pair
+        Attributes
+        ----------
+        state_dim : dimension of state space
+        num_actions: size of action space
+
+        """
+        self.state_dim = state_dim
+        self.n_actions = num_actions
+
+    def compile(self, state_dim_values, lr=0.2, policy_rule="maxrand", init_value=None):
+        """Build and initialize table with all possible state values.
+           state_dim_values consists of a tuple of arrays or lists - each array
+           gives every possible value for the corresponding dimension.
+        """
+
+        self.policy_rule = policies.get(policy_rule)
+
+        if init_value is None:
+            self.init_value = np.zeros(self.num_actions)
+        else:
+            self.init_value = init_value
+
+        self.table = {key: np.array(self.init_value) for key in list(itertools.product(*state_dim_values))}
+        self.lr = lr
+
+    def values(self, observation):
+        if observation.ndim == 1:
+            vals = self.table[tuple(observation)]
+        else:
+            obs_tuple = tuple(map(tuple, observation))  # convert to tuple of tuples
+            vals = map(self.table.__getitem__, obs_tuple)  # get values from dict as list of arrays
+        vals = np.asarray(vals)  # convert list of arrays to matrix (2-d array)
+        return vals
+
+    def max_values(self, observation, *args, **kwargs):
+        vals = self.values(observation)
+        return self.policy_rule.max(vals)
+
+    def policy(self, observation, *args, **kwargs):
+        vals = self.values(observation)
+        return self.policy_rule.policy(vals)
+
+    def update(self, inputs, targets, actions, weights=None):
+
+        current_values = self.values(inputs)
+
+        for ii, input in enumerate(inputs):
+            aa = int(actions[ii])
+            self.table[tuple(input)][aa] = current_values[ii][aa] + self.lr * (targets[ii] - current_values[ii][aa])
+
+        return ((targets - current_values)**2).sum()
+
+    @property
+    def num_actions(self):
+        return self.n_actions
+
+    @property
+    def input_shape(self):
+        return (self.state_dim,)
+
+    @property
+    def description(self):
+        dstr = "Table Model"
+        return dstr
