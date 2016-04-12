@@ -40,7 +40,8 @@ class DiscreteAgent(Agent):
     def __init__(self, model, memory, epsilon=None):
         super(DiscreteAgent, self).__init__(model, memory)
         if epsilon is None:
-            self.epsilon = lambda *args: .1
+            epsilon = lambda *args: .1
+        self.epsilon = epsilon
 
     def compile(self, *args, **kwargs):
         self.model.compile(*args, **kwargs)
@@ -61,8 +62,8 @@ class DiscreteAgent(Agent):
         return self.model.max_values(observation, train)
 
     def policy(self, observation, train=False):
-        if train and np.random.randint <= self.epsilon():
-            return np.random.randint(0, self.num_actions)
+        if train and np.random.rand() <= self.epsilon():
+            return [np.random.randint(0, self.num_actions)]
         else:
             return self.model.policy(observation, train)
 
@@ -139,7 +140,7 @@ class DiscreteAgent(Agent):
             # Run an episonde
             while not game_over:
                 obs_tm1 = obs_t
-                action = self.policy(obs_tm1)
+                action = self.policy(obs_tm1, train=True)
 
                 # apply action, get rewards and new state
                 obs_t, reward, game_over = env.update(action)
@@ -166,6 +167,7 @@ class DiscreteAgent(Agent):
             env.reset()
             game_over = False
             loss = 0
+
             # get initial observation, start game
             obs_t = env.observe()
             while not game_over:
