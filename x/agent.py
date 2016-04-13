@@ -5,7 +5,6 @@ from __future__ import division
 import numpy as np
 
 from keras.utils.generic_utils import Progbar
-from agnez.video import make_gif
 
 
 class Agent(object):
@@ -126,12 +125,13 @@ class DiscreteAgent(Agent):
         if reset_memory:
             self.reset()
         progbar = Progbar(epoch)
-        rewards = 0
+
         for e in xrange(epoch):
-            # reset enviroment
+            # reset environment on each epoch
             env.reset()
             game_over = False
             loss = 0
+            rewards = 0
 
             # get initial observation, start game
             obs_t = env.observe()
@@ -159,13 +159,15 @@ class DiscreteAgent(Agent):
         print("Free play started!")
         frames = np.zeros((0, ) + env.observe_image().shape[1:])
         frames = frames.transpose(0, 2, 3, 1)
-        rewards = 0
         progbar = Progbar(epoch)
 
         for e in xrange(epoch):
+            # reset environment on each epoch
             env.reset()
             game_over = False
             loss = 0
+            rewards = 0
+
             # get initial observation, start game
             obs_t = env.observe()
             while not game_over:
@@ -186,6 +188,7 @@ class DiscreteAgent(Agent):
 
 
         if visualize:
+            from agnez.video import make_gif
             print("Making gif!")
             frames = np.repeat(frames, 3, axis=-1)
             make_gif(frames[:visualize['n_frames']],
