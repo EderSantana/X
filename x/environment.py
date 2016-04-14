@@ -75,9 +75,10 @@ class Catcher(Environment):
 
         if output_shape is None:
             if output_type == 'pixels':
-                self.output_shape = (grid_size**2, )
+                output_shape = (grid_size**2, )
             elif output_type == 'position':
-                self.output_shape = (3, )
+                output_shape = (3, )
+        self.output_shape = output_shape
         self.reset()
 
     def _update_state(self, action):
@@ -254,3 +255,6 @@ class Snake(Environment):
         return "Snake game with grid size {}".format(self.grid_size)
 
 
+class Ale(Environment):
+    pass
+    
