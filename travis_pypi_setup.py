@@ -18,6 +18,7 @@ from cryptography.hazmat.primitives.asymmetric.padding import PKCS1v15
 try:
     from urllib import urlopen
 except:
+    # noinspection PyCompatibility
     from urllib.request import urlopen
 
 

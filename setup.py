@@ -16,6 +16,11 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     # TODO: put package requirements here
+    'keras',
+    'theano',
+    'agnez',
+    'six',
+    'git+https://github.com/AgnezIO/agnez' # not in pip
 ]
 
 test_requirements = [

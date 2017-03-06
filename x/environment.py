@@ -194,9 +194,9 @@ class Snake(Environment):
 
     def update(self, action):
         if self.is_over:
-            raise RuntimeWarning, 'Game over'
+            raise RuntimeWarning('Game over')
         if action >= len(self._apa):
-            raise ValueError, 'Action not available'
+            raise ValueError('Action not available')
 
         action = self._apa[action]
         if not sum(action):
