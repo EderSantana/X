@@ -6,7 +6,11 @@ from __future__ import division
 import numpy as np
 import keras.backend as K
 from keras import optimizers, objectives
-from keras.models import weighted_objective
+try:
+    from keras.models import weighted_objective
+except ImportError:
+    # weighted_objective was moved
+    from keras.engine.training import weighted_objective
 
 from . import policies
 
@@ -95,12 +99,22 @@ class KerasModel(Model):
         weighted_loss = weighted_objective(self.loss)
 
         # input of model
-        self.X_train = kmodel.get_input(train=True)
-        self.X_test = kmodel.get_input(train=False)
+        try:
+            self.X_train = kmodel.get_input(train=True)
+            self.X_test = kmodel.get_input(train=False)
+        except AttributeError:
+            # since this has been renamed
+            self.X_train = kmodel.get_input_at(0)
+            self.X_test = kmodel.get_input_at(0)
 
         # calculate policy values
-        values_train = kmodel.get_output(train=True)
-        values_test = kmodel.get_output(train=False)
+        try:
+            values_train = kmodel.get_output(train=True)
+            values_test = kmodel.get_output(train=False)
+        except AttributeError:
+            # since this has been renamed
+            values_train = kmodel.get_output_at(0)
+            values_test = kmodel.get_output_at(0)
         self.y_train = self.policy_rule(values_train)
         self.y_test = self.policy_rule(values_test)
 

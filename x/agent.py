@@ -5,7 +5,7 @@ from __future__ import division
 import numpy as np
 
 from keras.utils.generic_utils import Progbar
-
+from six.moves import xrange
 
 class Agent(object):
     """Base Agent class
